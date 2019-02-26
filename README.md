@@ -47,32 +47,24 @@ Even tho the distribution used is optimal, the EM algorithm cannot guarantee to 
 ### E-step:
 
 The general formula is 
-$$
-q_i(t) = arg max_{q_i} L(X,q_i, \theta)
-$$
+
+![](./equations/e_step.svg)
+
 where L is the likelihood, q are the hidden states probabilities and $\theta​$, the model (Gaussian) parameters, is kept fixed. For the Gaussian Mixture Model, we have that
 
-
-$$
-q_i = p(i|x_n) = \frac{p(i)Normal(x_n|\mu_i, \Sigma_i)}{\sum_k p(k)Normal(x_n|\mu_k, \Sigma_k)}
-$$
+![](./equations/e_step_gmm.svg)
 
 ### M-step:
 
 The general formula is 
-$$
-\theta_t = argmax_\lambda L(X,q_i, \theta)
-$$
+
+![](./equations/m_step.svg)
+
 where L is the likelihood, and q are the hidden states probabilities which are kept fixed. For the Gaussian Mixture Model, we have that 
 
+![](./equations/m_step_1.svg)
 
-$$
-\mu_i = \frac{\sum_n p(i|x_n) x_n}{\sum_n p(i|x_n) }
-$$
-
-$$
-\Sigma_i = \frac{\sum_n p(i|x_n)(x_n - \mu_i)(x_n - \mu_i )^T}{\sum_n p(i|x_n) }
-$$
+![](./equations/m_step_2.svg)
 
 
 
@@ -88,7 +80,7 @@ $$
 
 This approximation can be thought as the mean field approximation where we set:
 
-$$ p(z,\theta|X) = q(z|X)q(\theta|X) ​$$
+![](./equations/mean-field.svg)
 
 Instead of having a point estimate of the posterior we have a full posterior distribution.
 
@@ -96,23 +88,19 @@ Instead of having a point estimate of the posterior we have a full posterior dis
 
 We have that the KL divergence becomes
 
-$$  KL(q(z)q(\theta)|p(z,\theta|X)) =  E_{q(z)}[\log q(z)] + E_{q(\theta)}[\log q(\theta)]  - E_{q(z)q(\theta)}[p(z,\theta|X)] \geq 0$$
-
-
+![](./equations/VB_1.svg)
 
 which give the evidence lower bound (ELBO)
 
-$$  p(X)  \geq E_{q(z)}[\log q(z)] + E_{q(\theta)}[\log q(\theta)]  - E_{q(z)q(\theta)}[p(z,\theta, X)]   $$
+![](./equations/VB_2.svg)
 
-
-
-And minimizing with respect to $ q(z) $ and $ q(\theta) $ correspond to find the tightest lower bound. We should take note that this doesn't mean that the log-likelihood is improved.  The implementation use the Stochastic Variational Inference in Pyro. For more information, you can check [Automatic Variation Inference](https://arxiv.org/pdf/1301.1299.pdf) and the [pyro svi documentation](http://pyro.ai/examples/svi_part_i.html)
+And minimizing with respect to $ q(z) ​$ and $ q(\theta) ​$ correspond to find the tightest lower bound. We should take note that this doesn't mean that the log-likelihood is improved.  The implementation use the Stochastic Variational Inference in Pyro. For more information, you can check [Automatic Variation Inference](https://arxiv.org/pdf/1301.1299.pdf) and the [pyro svi documentation](http://pyro.ai/examples/svi_part_i.html)
 
 Results:
 
-![](/home/louis/Documents/codes/GaussianMixtureModel/figures/svi-loss.png)
+![](./figures/svi-loss.png)
 
-![](/home/louis/Documents/codes/GaussianMixtureModel/figures/svi-mixture-density.png)
+![](./figures/svi-mixture-density.png)
 
 
 
@@ -125,34 +113,26 @@ The model for the Markov Chains Monte-Carlo (MCMC) is defined as follows:
 
 
 All the parameters have priors
-$$
-\sigma_i \sim HalfCauchy(y_0, \gamma)
-$$
 
-$$
-\mu_i \sim Normal(\mu_0, \sigma^2_0)
-$$
+![](./equations/HalfCauchy.svg)
 
-$$
-\phi \sim Dirichlet({\bold \alpha})
-$$
+![](./equations/mu-i-prior.svg)
 
-$$
-z_i \sim Categorical(\phi)
-$$
+![](./equations/dirichlet.svg)
+
+![](./equations/categorical.svg)
 
 and  the observations are modeled as:
-$$
-x_i \sim Normal(\mu_{z_i}, \sigma^2_{z_i})
-$$
+
+![](./equations/normal_data.svg)
 
 
 Sampling is made using [NUTS](https://arxiv.org/pdf/1111.4246.pdf).
 
 
 
-![](/home/louis/Documents/codes/GaussianMixtureModel/figures/MCMC-chains.png)
+![](./figures/MCMC-chains.png)
 
 
 
-![](/home/louis/Documents/codes/GaussianMixtureModel/figures/MCMC-mixture-density.png)
+![](./figures/MCMC-mixture-density.png)
